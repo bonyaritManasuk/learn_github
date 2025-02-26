@@ -1,0 +1,53 @@
+import hashlib
+
+# ตัวแปรเก็บข้อมูลผู้ใช้งาน (ในรูปแบบ Dictionary)
+users = {}
+
+def register_user(username, password):
+    """
+    ฟังก์ชันสำหรับลงทะเบียนผู้ใช้งานใหม่
+
+    Args:
+        username (str): ชื่อผู้ใช้งานที่ต้องการลงทะเบียน
+        password (str): รหัสผ่านที่ต้องการตั้ง
+    """
+    if username in users:
+        print("ชื่อผู้ใช้งานนี้มีอยู่ในระบบแล้ว")
+        return False
+
+    # เข้ารหัสรหัสผ่าน (Password Hashing) ก่อนจัดเก็บ
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    users[username] = hashed_password
+    print(f"ลงทะเบียนผู้ใช้งาน '{username}' สำเร็จ")
+    return True
+
+def login_user(username, password):
+    """
+    ฟังก์ชันสำหรับตรวจสอบการเข้าสู่ระบบของผู้ใช้งาน
+
+    Args:
+        username (str): ชื่อผู้ใช้งานที่ต้องการเข้าสู่ระบบ
+        password (str): รหัสผ่านที่ผู้ใช้งานป้อน
+    """
+    if username not in users:
+        print("ชื่อผู้ใช้งานนี้ไม่มีอยู่ในระบบ")
+        return False
+
+    stored_hashed_password = users[username]
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    if hashed_password == stored_hashed_password:
+        print(f"ผู้ใช้งาน '{username}' เข้าสู่ระบบสำเร็จ")
+        return True
+    else:
+        print("รหัสผ่านไม่ถูกต้อง")
+        return False
+
+# ตัวอย่างการใช้งาน
+register_user("admin", "password123") # ลงทะเบียนผู้ใช้งาน 'admin' ด้วยรหัสผ่าน 'password123'
+register_user("user1", "securepass")  # ลงทะเบียนผู้ใช้งาน 'user1' ด้วยรหัสผ่าน 'securepass'
+
+login_user("admin", "password123")    # ทดสอบเข้าสู่ระบบด้วย 'admin' และรหัสผ่านที่ถูกต้อง
+login_user("admin", "wrongpassword")  # ทดสอบเข้าสู่ระบบด้วย 'admin' และรหัสผ่านที่ไม่ถูกต้อง
+login_user("user2", "securepass")    # ทดสอบเข้าสู่ระบบด้วย 'user2' (ผู้ใช้งานที่ไม่ได้ลงทะเบียน)
